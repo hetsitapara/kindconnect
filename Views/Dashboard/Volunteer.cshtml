@@ -1,0 +1,96 @@
+@{
+    ViewData["Title"] = "Volunteer Dashboard";
+    var stats = ViewBag.Stats as dynamic;
+    var myApplications = ViewBag.MyApplications as List<VolunteerApplication>;
+    var upcomingEvents = ViewBag.UpcomingEvents as List<VolunteerApplication>;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2>Volunteer Dashboard</h2>
+            <p class="text-muted">Welcome to your volunteer dashboard</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Applications</h5>
+                    <h3 class="text-primary">@stats?.TotalApplications</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Approved</h5>
+                    <h3 class="text-success">@stats?.ApprovedApplications</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- My Applications -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>My Applications</h5>
+                </div>
+                <div class="card-body">
+                    @if (myApplications?.Any() == true)
+                    {
+                        <div class="list-group">
+                            @foreach (var application in myApplications)
+                            {
+                                <div class="list-group-item">
+                                    <h6>@application.Event?.Title</h6>
+                                    <small class="text-muted">Status: @application.Status</small>
+                                    <div class="mt-2">
+                                        <a href="@Url.Action("Details", "Events", new { id = application.EventId })" class="btn btn-sm btn-outline-primary">View Event</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No applications found.</p>
+                    }
+                    <div class="mt-3">
+                        <a href="@Url.Action("Index", "Events")" class="btn btn-primary">Browse Events</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Upcoming Events -->
+    @if (upcomingEvents?.Any() == true)
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Upcoming Events</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            @foreach (var application in upcomingEvents)
+                            {
+                                <div class="list-group-item">
+                                    <h6>@application.Event?.Title</h6>
+                                    <small class="text-muted">@application.Event?.StartAt.ToString("MMM dd, yyyy") at @application.Event?.Venue</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

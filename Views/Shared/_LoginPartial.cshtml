@@ -1,0 +1,41 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<VolunteerManagementSystem.Models.ApplicationUser> SignInManager
+@inject UserManager<VolunteerManagementSystem.Models.ApplicationUser> UserManager
+
+<ul class="navbar-nav">
+@if (SignInManager.IsSignedIn(User))
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            @User.Identity?.Name
+        </a>
+        <ul class="dropdown-menu">
+            
+            @if (User.IsInRole("NGO"))
+            {
+                <li><a class="dropdown-item" asp-area="" asp-controller="Events" asp-action="Create">Create Event</a></li>
+                <li><a class="dropdown-item" asp-area="" asp-controller="NGOProfiles" asp-action="Details" asp-route-id="@ViewBag.NGOProfileId">NGO Profile</a></li>
+            }
+            
+            @* Removed Manage NGOs link *@
+            
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" asp-controller="Account" asp-action="Manage">Profile Settings</a></li>
+            <li>
+                <form class="form-inline" asp-controller="Account" asp-action="Logout">
+                    <button type="submit" class="dropdown-item">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+    </li>
+}
+</ul>

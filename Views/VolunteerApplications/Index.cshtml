@@ -1,0 +1,120 @@
+@model IEnumerable<VolunteerManagementSystem.Models.VolunteerApplication>
+
+@{
+    ViewData["Title"] = "My Applications";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-clipboard-list"></i> My Applications</h2>
+                <a asp-controller="Events" asp-action="Index" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Browse Events
+                </a>
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (Model.Any())
+            {
+                <div class="row">
+                    @foreach (var application in Model)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">@application.Event?.Title</h6>
+                                    <span class="badge @GetStatusBadgeClass(application.Status)">
+                                        @application.Status
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <strong>Event Date:</strong> @application.Event?.StartAt.ToString("MMM dd, yyyy")<br>
+                                        <strong>Event Time:</strong> @application.Event?.StartAt.ToString("h:mm tt")<br>
+                                        <strong>Venue:</strong> @application.Event?.Venue<br>
+                                        <strong>NGO:</strong> @application.Event?.NGO?.Name
+                                    </p>
+                                    
+                                    @if (!string.IsNullOrEmpty(application.Message))
+                                    {
+                                        <p class="card-text">
+                                            <strong>Your Message:</strong><br>
+                                            <small class="text-muted">
+                                                @(application.Message.Length > 100 ? application.Message.Substring(0, 100) + "..." : application.Message)
+                                            </small>
+                                        </p>
+                                    }
+
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            <strong>Applied:</strong> @application.AppliedAt.ToString("MMM dd, yyyy 'at' h:mm tt")
+                                        </small>
+                                    </p>
+
+                                    @if (application.RespondedAt.HasValue)
+                                    {
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                <strong>Response:</strong> @application.RespondedAt.Value.ToString("MMM dd, yyyy 'at' h:mm tt")
+                                            </small>
+                                        </p>
+                                    }
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-center">
+                                        <a asp-controller="Events" asp-action="Details" asp-route-id="@application.EventId" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye"></i> View Event
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-clipboard-list fa-4x text-muted"></i>
+                    </div>
+                    <h4>No Applications Found</h4>
+                    <p class="text-muted">You haven't applied for any events yet.</p>
+                    <a asp-controller="Events" asp-action="Index" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Browse Available Events
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusBadgeClass(VolunteerManagementSystem.Models.ApplicationStatus status)
+    {
+        return status switch
+        {
+            VolunteerManagementSystem.Models.ApplicationStatus.Pending => "bg-warning text-dark",
+            VolunteerManagementSystem.Models.ApplicationStatus.Approved => "bg-success",
+            VolunteerManagementSystem.Models.ApplicationStatus.Rejected => "bg-danger",
+            VolunteerManagementSystem.Models.ApplicationStatus.Cancelled => "bg-secondary",
+            _ => "bg-secondary"
+        };
+    }
+}

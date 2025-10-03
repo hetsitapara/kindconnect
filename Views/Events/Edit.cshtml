@@ -1,0 +1,177 @@
+@model VolunteerManagementSystem.Models.ViewModels.EditEventViewModel
+
+@{
+    ViewData["Title"] = "Edit Event";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Events</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Id">@Model.Title</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-edit"></i> Edit Event</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @TempData["Error"]
+                        </div>
+                    }
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            @TempData["Success"]
+                        </div>
+                    }
+
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input asp-for="Id" type="hidden" />
+                        <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label asp-for="Title" class="form-label">Event Title *</label>
+                                    <input asp-for="Title" class="form-control" placeholder="Enter event title" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="Category" class="form-label">Category *</label>
+                                    <select asp-for="Category" class="form-select">
+                                        <option value="">Select Category</option>
+                                        <option value="Education">Education</option>
+                                        <option value="Healthcare">Healthcare</option>
+                                        <option value="Environment">Environment</option>
+                                        <option value="Community Service">Community Service</option>
+                                        <option value="Disaster Relief">Disaster Relief</option>
+                                        <option value="Animal Welfare">Animal Welfare</option>
+                                        <option value="Arts & Culture">Arts & Culture</option>
+                                        <option value="Sports & Recreation">Sports & Recreation</option>
+                                        <option value="Technology">Technology</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <span asp-validation-for="Category" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description *</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Describe the event, what volunteers will be doing, and any requirements..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="StartAt" class="form-label">Start Date & Time *</label>
+                                    <input asp-for="StartAt" class="form-control" type="datetime-local" />
+                                    <span asp-validation-for="StartAt" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="EndAt" class="form-label">End Date & Time *</label>
+                                    <input asp-for="EndAt" class="form-control" type="datetime-local" />
+                                    <span asp-validation-for="EndAt" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label asp-for="Venue" class="form-label">Venue *</label>
+                                    <input asp-for="Venue" class="form-control" placeholder="Enter event venue or location" />
+                                    <span asp-validation-for="Venue" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="Capacity" class="form-label">Volunteer Capacity *</label>
+                                    <input asp-for="Capacity" class="form-control" type="number" min="1" placeholder="Max volunteers" />
+                                    <span asp-validation-for="Capacity" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="ContactPerson" class="form-label">Contact Person</label>
+                                    <input asp-for="ContactPerson" class="form-control" placeholder="Contact person name" />
+                                    <span asp-validation-for="ContactPerson" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="ContactPhone" class="form-label">Contact Phone</label>
+                                    <input asp-for="ContactPhone" class="form-control" placeholder="Phone number" />
+                                    <span asp-validation-for="ContactPhone" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="ContactEmail" class="form-label">Contact Email</label>
+                                    <input asp-for="ContactEmail" class="form-control" type="email" placeholder="Email address" />
+                                    <span asp-validation-for="ContactEmail" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input asp-for="IsPublic" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsPublic" class="form-check-label">
+                                    Make this event public (visible to all volunteers)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Event
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Set minimum date to today
+        const today = new Date().toISOString().slice(0, 16);
+        document.getElementById('StartAt').setAttribute('min', today);
+        document.getElementById('EndAt').setAttribute('min', today);
+
+        // Update end date minimum when start date changes
+        document.getElementById('StartAt').addEventListener('change', function() {
+            document.getElementById('EndAt').setAttribute('min', this.value);
+        });
+    </script>
+}

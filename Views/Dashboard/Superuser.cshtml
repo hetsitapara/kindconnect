@@ -1,0 +1,154 @@
+@{
+    ViewData["Title"] = "Superuser Dashboard";
+    var stats = ViewBag.Stats as dynamic;
+    var recentEvents = ViewBag.RecentEvents as List<Event>;
+    var recentApplications = ViewBag.RecentApplications as List<VolunteerApplication>;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2>Superuser Dashboard</h2>
+            <p class="text-muted">System Administration Panel</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <h3 class="text-primary">@stats?.TotalUsers</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total NGOs</h5>
+                    <h3 class="text-success">@stats?.TotalNGOs</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Events</h5>
+                    <h3 class="text-info">@stats?.TotalEvents</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Applications</h5>
+                    <h3 class="text-warning">@stats?.TotalApplications</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Pending</h5>
+                    <h3 class="text-danger">@stats?.PendingApplications</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Active Events</h5>
+                    <h3 class="text-secondary">@stats?.ActiveEvents</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Events -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Events</h5>
+                </div>
+                <div class="card-body">
+                    @if (recentEvents?.Any() == true)
+                    {
+                        <div class="list-group">
+                            @foreach (var eventItem in recentEvents)
+                            {
+                                <div class="list-group-item">
+                                    <h6>@eventItem.Title</h6>
+                                    <small class="text-muted">by @eventItem.NGO?.Name</small>
+                                    <div class="mt-2">
+                                        <a href="@Url.Action("Details", "Events", new { id = eventItem.Id })" class="btn btn-sm btn-outline-primary">View</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No events found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Applications -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Applications</h5>
+                </div>
+                <div class="card-body">
+                    @if (recentApplications?.Any() == true)
+                    {
+                        <div class="list-group">
+                            @foreach (var application in recentApplications)
+                            {
+                                <div class="list-group-item">
+                                    <h6>@application.User?.FirstName @application.User?.LastName</h6>
+                                    <small class="text-muted">Applied for: @application.Event?.Title</small>
+                                    <div class="mt-2">
+                                        <span class="badge bg-@(application.Status == ApplicationStatus.Approved ? "success" : application.Status == ApplicationStatus.Rejected ? "danger" : "warning")">@application.Status</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No applications found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Administrative Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @* Removed Manage NGOs button *@
+                        <div class="col-md-3">
+                            <a href="@Url.Action("Index", "Events")" class="btn btn-outline-secondary w-100">Manage Events</a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="@Url.Action("Index", "VolunteerApplications")" class="btn btn-outline-info w-100">View Applications</a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="@Url.Action("Index", "Certificates")" class="btn btn-outline-success w-100">Manage Certificates</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

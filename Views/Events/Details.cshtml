@@ -1,0 +1,103 @@
+@model VolunteerManagementSystem.Models.Event
+
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">@Model.Title</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Category:</strong> @Model.Category</p>
+                            <p><strong>Start Date:</strong> @Model.StartAt.ToString("MMM dd, yyyy")</p>
+                            <p><strong>Start Time:</strong> @Model.StartAt.ToString("h:mm tt")</p>
+                            <p><strong>End Date:</strong> @Model.EndAt.ToString("MMM dd, yyyy")</p>
+                            <p><strong>End Time:</strong> @Model.EndAt.ToString("h:mm tt")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Venue:</strong> @Model.Venue</p>
+                            <p><strong>Capacity:</strong> @Model.Capacity volunteers</p>
+                            <p><strong>NGO:</strong> @Model.NGO?.Name</p>
+                            <p><strong>Status:</strong> 
+                                @if (Model.IsUpcoming)
+                                {
+                                    <span class="badge bg-success">Upcoming</span>
+                                }
+                                else if (Model.IsOngoing)
+                                {
+                                    <span class="badge bg-warning">Ongoing</span>
+                                }
+                                else if (Model.IsCompleted)
+                                {
+                                    <span class="badge bg-secondary">Completed</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <h5>Description</h5>
+                        <p>@Model.Description</p>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.ContactPerson) || !string.IsNullOrEmpty(Model.ContactPhone) || !string.IsNullOrEmpty(Model.ContactEmail))
+                    {
+                        <div class="mb-3">
+                            <h5>Contact Information</h5>
+                            @if (!string.IsNullOrEmpty(Model.ContactPerson))
+                            {
+                                <p><strong>Contact Person:</strong> @Model.ContactPerson</p>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.ContactPhone))
+                            {
+                                <p><strong>Phone:</strong> @Model.ContactPhone</p>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.ContactEmail))
+                            {
+                                <p><strong>Email:</strong> @Model.ContactEmail</p>
+                            }
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">Back to Events</a>
+                        <div>
+                            @if (User.IsInRole("Volunteer") && Model.IsUpcoming && !Model.IsFull)
+                            {
+                                var hasApplied = ViewBag.HasApplied as bool? ?? false;
+                                if (!hasApplied)
+                                {
+                                    <a asp-controller="VolunteerApplications" asp-action="Apply" asp-route-eventId="@Model.Id" class="btn btn-success me-2">
+                                        <i class="fas fa-hand-holding-heart"></i> Apply to Volunteer
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info text-dark fs-6 me-2">
+                                        <i class="fas fa-check-circle"></i> Application Submitted
+                                    </span>
+                                }
+                            }
+                            @if (User.IsInRole("NGO") || User.IsInRole("Superuser"))
+                            {
+                                <a asp-controller="VolunteerApplications" asp-action="Manage" asp-route-eventId="@Model.Id" class="btn btn-success me-2">
+                                    <i class="fas fa-users"></i> Manage Applications
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary me-2">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

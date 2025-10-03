@@ -1,0 +1,102 @@
+@{
+    ViewData["Title"] = "Event Details";
+    var eventItem = ViewBag.Event as Event;
+    var applications = ViewBag.Applications as List<VolunteerApplication>;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2>Event Details</h2>
+            <a href="@Url.Action("Index", "Events")" class="btn btn-secondary">Back to Events</a>
+        </div>
+    </div>
+
+    @if (eventItem != null)
+    {
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>@eventItem.Title</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Description:</strong> @eventItem.Description</p>
+                        <p><strong>Date:</strong> @eventItem.StartAt.ToString("MMM dd, yyyy") - @eventItem.EndAt.ToString("MMM dd, yyyy")</p>
+                        <p><strong>Venue:</strong> @eventItem.Venue</p>
+                        <p><strong>Capacity:</strong> @eventItem.Capacity</p>
+                        <p><strong>Category:</strong> @eventItem.Category</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Quick Stats</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Total Applications:</strong> @applications?.Count</p>
+                        <p><strong>Approved:</strong> @applications?.Count(a => a.Status == ApplicationStatus.Approved)</p>
+                        <p><strong>Pending:</strong> @applications?.Count(a => a.Status == ApplicationStatus.Pending)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applications -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Volunteer Applications</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (applications?.Any() == true)
+                        {
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Applied Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var application in applications)
+                                        {
+                                            <tr>
+                                                <td>@application.User?.FirstName @application.User?.LastName</td>
+                                                <td>@application.User?.Email</td>
+                                                <td>@application.AppliedAt.ToString("MMM dd, yyyy")</td>
+                                                <td>
+                                                    <span class="badge bg-@(application.Status == ApplicationStatus.Approved ? "success" : application.Status == ApplicationStatus.Rejected ? "danger" : "warning")">
+                                                        @application.Status
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="@Url.Action("Details", "VolunteerApplications", new { id = application.Id })" class="btn btn-sm btn-outline-primary me-1">Review</a>
+                                                    @if (application.Status == ApplicationStatus.Pending)
+                                                    {
+                                                        <a href="@Url.Action("Manage", "VolunteerApplications", new { eventId = application.EventId })" class="btn btn-sm btn-success">Manage All</a>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No applications found.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+</div>

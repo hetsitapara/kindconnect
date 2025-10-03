@@ -1,0 +1,196 @@
+@model VolunteerManagementSystem.Models.VolunteerApplication
+
+@{
+    ViewData["Title"] = "Application Details";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0"><i class="fas fa-file-alt"></i> Application Details</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Message"] != null)
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            @TempData["Message"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-calendar-alt text-primary"></i> Event Information</h5>
+                            <hr>
+                            @if (Model?.Event != null)
+                            {
+                                <div class="mb-3">
+                                    <strong>Event Title:</strong><br>
+                                    <span class="text-primary">@Model.Event.Title</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Event Date:</strong><br>
+                                    @Model.Event.StartAt.ToString("MMM dd, yyyy 'at' h:mm tt")
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Location:</strong><br>
+                                    @Model.Event.Venue
+                                </div>
+                                <div class="mb-3">
+                                    <strong>NGO:</strong><br>
+                                    @(Model.Event.NGO?.Name ?? "N/A")
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> Event information not available.
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-user text-success"></i> Application Information</h5>
+                            <hr>
+                            @if (Model?.User != null)
+                            {
+                                <div class="mb-3">
+                                    <strong>Applicant:</strong><br>
+                                    @Model.User.FirstName @Model.User.LastName
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="mb-3">
+                                    <strong>Applicant:</strong><br>
+                                    <span class="text-muted">User information not available</span>
+                                </div>
+                            }
+                            <div class="mb-3">
+                                <strong>Applied On:</strong><br>
+                                @Model?.AppliedAt.ToString("MMM dd, yyyy 'at' h:mm tt")
+                            </div>
+                            <div class="mb-3">
+                                <strong>Status:</strong><br>
+                                @{
+                                    string statusClass = Model.Status switch
+                                    {
+                                        ApplicationStatus.Pending => "bg-warning text-dark",
+                                        ApplicationStatus.Approved => "bg-success",
+                                        ApplicationStatus.Rejected => "bg-danger",
+                                        ApplicationStatus.Cancelled => "bg-secondary",
+                                        _ => "bg-secondary"
+                                    };
+                                }
+                                <span class="badge @statusClass">@Model.Status</span>
+                            </div>
+                            @if (Model?.RespondedAt.HasValue == true)
+                            {
+                                <div class="mb-3">
+                                    <strong>Responded On:</strong><br>
+                                    @Model.RespondedAt.Value.ToString("MMM dd, yyyy 'at' h:mm tt")
+                                </div>
+                                @if (Model.RespondedByUser != null)
+                                {
+                                    <div class="mb-3">
+                                        <strong>Responded By:</strong><br>
+                                        @Model.RespondedByUser.FirstName @Model.RespondedByUser.LastName
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h5><i class="fas fa-comment text-info"></i> Application Message</h5>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    @if (!string.IsNullOrEmpty(Model?.Message))
+                                    {
+                                        <p class="mb-0">@Model.Message</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted mb-0"><em>No message provided</em></p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model?.Skills))
+                    {
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h5><i class="fas fa-tools text-warning"></i> Skills & Experience</h5>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <p class="mb-0">@Model.Skills</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model?.Availability))
+                    {
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h5><i class="fas fa-clock text-success"></i> Availability</h5>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <p class="mb-0">@Model.Availability</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model?.ResponseMessage))
+                    {
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h5><i class="fas fa-reply text-primary"></i> Response Message</h5>
+                                <div class="card @(Model.Status == ApplicationStatus.Approved ? "bg-success text-white" : Model.Status == ApplicationStatus.Rejected ? "bg-danger text-white" : "bg-light")">
+                                    <div class="card-body">
+                                        <p class="mb-0">@Model.ResponseMessage</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Applications
+                        </a>
+                        <div>
+                            @if (Model?.EventId != null)
+                            {
+                                <a asp-controller="Events" asp-action="Details" asp-route-id="@Model.EventId" class="btn btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View Event
+                                </a>
+                            }
+                            @if (Model?.Status == ApplicationStatus.Pending && Model?.UserId == ViewBag.CurrentUserId)
+                            {
+                                <form asp-action="Cancel" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-warning" onclick="return confirm('Are you sure you want to cancel this application?')">
+                                        <i class="fas fa-times"></i> Cancel Application
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,66 @@
+@model VolunteerManagementSystem.Models.ViewModels.VolunteerApplicationViewModel
+
+@{
+    ViewData["Title"] = "Apply for Event";
+    var eventItem = ViewBag.Event as VolunteerManagementSystem.Models.Event;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-hand-holding-heart"></i> Apply for Event</h4>
+                </div>
+                <div class="card-body">
+                    @if (eventItem != null)
+                    {
+                        <div class="alert alert-info">
+                            <h5>@eventItem.Title</h5>
+                            <p class="mb-1"><strong>Date:</strong> @eventItem.StartAt.ToString("MMM dd, yyyy") at @eventItem.StartAt.ToString("h:mm tt")</p>
+                            <p class="mb-1"><strong>Venue:</strong> @eventItem.Venue</p>
+                            <p class="mb-0"><strong>NGO:</strong> @eventItem.NGO?.Name</p>
+                        </div>
+                    }
+
+                    <form asp-action="Apply" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="eventId" value="@eventItem?.Id" />
+                        <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Message" class="form-label">Why do you want to volunteer for this event? *</label>
+                            <textarea asp-for="Message" class="form-control" rows="4" placeholder="Tell us about your motivation and what you hope to contribute..."></textarea>
+                            <span asp-validation-for="Message" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Skills" class="form-label">Relevant Skills & Experience</label>
+                            <textarea asp-for="Skills" class="form-control" rows="3" placeholder="List any relevant skills, experience, or qualifications you have..."></textarea>
+                            <span asp-validation-for="Skills" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Availability" class="form-label">Availability</label>
+                            <textarea asp-for="Availability" class="form-control" rows="2" placeholder="Any specific availability notes or constraints..."></textarea>
+                            <span asp-validation-for="Availability" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-controller="Events" asp-action="Details" asp-route-id="@eventItem?.Id" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Event
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Submit Application
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

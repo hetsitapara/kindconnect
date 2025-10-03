@@ -1,0 +1,74 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- Hero Section -->
+<section class="bg-primary text-white py-5 mb-5 rounded">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="bi bi-heart-fill text-warning me-2"></i>
+                    Make a Difference Today
+                </h1>
+                <p class="lead mb-4">
+                    Connect with meaningful volunteer opportunities in your community. 
+                    Join thousands of volunteers making a positive impact every day.
+                </p>
+                <div class="d-grid gap-2 d-md-flex">
+                    <a asp-controller="Events" asp-action="Index" class="btn btn-warning btn-lg me-md-2">
+                        <i class="bi bi-calendar-event me-2"></i>Find Events
+                    </a>
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-person-plus me-2"></i>Join Now
+                        </a>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="bi bi-people-fill display-1 text-warning"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+@if (ViewBag.Stats != null)
+{
+    <section class="py-4 mb-5">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-4 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <i class="bi bi-calendar-event text-primary display-4 mb-3"></i>
+                            <h3 class="fw-bold text-primary">@ViewBag.Stats.TotalEvents</h3>
+                            <p class="text-muted mb-0">Active Events</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <i class="bi bi-building text-success display-4 mb-3"></i>
+                            <h3 class="fw-bold text-success">@ViewBag.Stats.TotalNGOs</h3>
+                            <p class="text-muted mb-0">Partner NGOs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <i class="bi bi-people text-warning display-4 mb-3"></i>
+                            <h3 class="fw-bold text-warning">@ViewBag.Stats.TotalVolunteers</h3>
+                            <p class="text-muted mb-0">Active Volunteers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
