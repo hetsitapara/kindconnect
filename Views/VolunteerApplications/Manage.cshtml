@@ -129,9 +129,13 @@
                                                     {
                                                         @if (!eventItem?.IsFull == true)
                                                         {
-                                                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal@(application.Id)">
-                                                                <i class="fas fa-check"></i> Approve
-                                                            </button>
+                                                            <form asp-action="Approve" method="post" style="display: inline;">
+                                                                @Html.AntiForgeryToken()
+                                                                <input type="hidden" name="id" value="@application.Id" />
+                                                                <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to approve this application?')">
+                                                                    <i class="fas fa-check"></i> Approve
+                                                                </button>
+                                                            </form>
                                                         }
                                                         else
                                                         {
@@ -140,9 +144,13 @@
                                                             </button>
                                                         }
                                                         
-                                                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal@(application.Id)">
-                                                            <i class="fas fa-times"></i> Reject
-                                                        </button>
+                                                        <form asp-action="Reject" method="post" style="display: inline;">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="id" value="@application.Id" />
+                                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to reject this application?')">
+                                                                <i class="fas fa-times"></i> Reject
+                                                            </button>
+                                                        </form>
                                                     }
                                                     else
                                                     {
@@ -152,70 +160,6 @@
                                             </td>
                                         </tr>
 
-                                        <!-- Approve Modal -->
-                                        @if (application.Status == ApplicationStatus.Pending)
-                                        {
-                                            <div class="modal fade" id="approveModal@(application.Id)" tabindex="-1">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header bg-success text-white">
-                                                            <h5 class="modal-title">
-                                                                <i class="fas fa-check"></i> Approve Application
-                                                            </h5>
-                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                        </div>
-                                                        <form asp-action="Approve" method="post">
-                                                            @Html.AntiForgeryToken()
-                                                            <input type="hidden" name="id" value="@application.Id" />
-                                                            <div class="modal-body">
-                                                                <p>Are you sure you want to approve <strong>@application.User?.FirstName @application.User?.LastName</strong>'s application?</p>
-                                                                <div class="mb-3">
-                                                                    <label for="responseMessage@(application.Id)" class="form-label">Response Message (Optional)</label>
-                                                                    <textarea class="form-control" id="responseMessage@(application.Id)" name="responseMessage" rows="3" placeholder="Add a message for the volunteer..."></textarea>
-                                                                </div>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                                <button type="submit" class="btn btn-success">
-                                                                    <i class="fas fa-check"></i> Approve Application
-                                                                </button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Reject Modal -->
-                                            <div class="modal fade" id="rejectModal@(application.Id)" tabindex="-1">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header bg-danger text-white">
-                                                            <h5 class="modal-title">
-                                                                <i class="fas fa-times"></i> Reject Application
-                                                            </h5>
-                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                        </div>
-                                                        <form asp-action="Reject" method="post">
-                                                            @Html.AntiForgeryToken()
-                                                            <input type="hidden" name="id" value="@application.Id" />
-                                                            <div class="modal-body">
-                                                                <p>Are you sure you want to reject <strong>@application.User?.FirstName @application.User?.LastName</strong>'s application?</p>
-                                                                <div class="mb-3">
-                                                                    <label for="rejectMessage@(application.Id)" class="form-label">Reason for Rejection (Optional)</label>
-                                                                    <textarea class="form-control" id="rejectMessage@(application.Id)" name="responseMessage" rows="3" placeholder="Provide a reason for rejection..."></textarea>
-                                                                </div>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                                <button type="submit" class="btn btn-danger">
-                                                                    <i class="fas fa-times"></i> Reject Application
-                                                                </button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }
                                     }
                                 </tbody>
                             </table>

@@ -52,7 +52,7 @@ namespace VolunteerManagementSystem.Controllers
                 {
                     query = _context.Events
                         .Include(e => e.NGO)
-                        .Where(e => e.NGOId == ngoProfile.Id)
+                        .Where(e => e.NGOId == ngoProfile.Id && e.IsActive)
                         .OrderBy(e => e.StartAt)
                         .AsQueryable();
                 }
