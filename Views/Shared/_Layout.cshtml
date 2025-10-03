@@ -79,7 +79,18 @@
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
+                            @if (User.IsInRole("Volunteer"))
+                            {
+                                <a class="nav-link" asp-area="" asp-controller="Events" asp-action="Browse">Browse Events</a>
+                            }
+                            else if (User.IsInRole("NGO"))
+                            {
+                                <a class="nav-link" asp-area="" asp-controller="Events" asp-action="Index">My Events</a>
+                            }
+                            else
+                            {
+                                <a class="nav-link" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
+                            }
                         </li>
                         @if (SignInManager.IsSignedIn(User))
                         {

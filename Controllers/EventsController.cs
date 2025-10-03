@@ -41,10 +41,34 @@ namespace VolunteerManagementSystem.Controllers
                     .OrderBy(e => e.StartAt)
                     .AsQueryable();
             }
+            // If NGO, show only their own events
+            else if (User.Identity.IsAuthenticated && User.IsInRole("NGO"))
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+                var ngoProfile = await _context.NGOProfiles
+                    .FirstOrDefaultAsync(n => n.UserId == currentUser.Id);
+
+                if (ngoProfile != null)
+                {
+                    query = _context.Events
+                        .Include(e => e.NGO)
+                        .Where(e => e.NGOId == ngoProfile.Id)
+                        .OrderBy(e => e.StartAt)
+                        .AsQueryable();
+                }
+                else
+                {
+                    // If NGO profile not found, show empty list
+                    query = _context.Events
+                        .Include(e => e.NGO)
+                        .Where(e => false) // Empty query
+                        .AsQueryable();
+                }
+            }
 
             var events = await query.ToListAsync();
 
-            // Check if current user has applied for each event
+            // Check if current user has applied for each event (only for volunteers)
             if (User.Identity.IsAuthenticated && User.IsInRole("Volunteer"))
             {
                 var currentUser = await _userManager.GetUserAsync(User);
@@ -60,6 +84,31 @@ namespace VolunteerManagementSystem.Controllers
             }
 
             return View(events);
+        }
+
+        // GET: Events/Browse - Browse all public events (for volunteers)
+        [Authorize(Roles = "Volunteer")]
+        public async Task<IActionResult> Browse()
+        {
+            var events = await _context.Events
+                .Include(e => e.NGO)
+                .Where(e => e.IsActive && e.IsPublic)
+                .OrderBy(e => e.StartAt)
+                .ToListAsync();
+
+            // Check if current user has applied for each event
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser != null)
+            {
+                var userApplications = await _context.VolunteerApplications
+                    .Where(va => va.UserId == currentUser.Id)
+                    .Select(va => va.EventId)
+                    .ToListAsync();
+
+                ViewBag.UserApplications = userApplications;
+            }
+
+            return View("Index", events);
         }
 
         // GET: Events/Details/5 - Show event details and application state for volunteer

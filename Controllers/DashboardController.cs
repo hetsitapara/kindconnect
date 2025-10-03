@@ -40,7 +40,7 @@ namespace VolunteerManagementSystem.Controllers
             }
             else if (User.IsInRole("Volunteer"))
             {
-                return RedirectToAction("Volunteer");
+                return RedirectToAction("Browse", "Events");
             }
 
             return RedirectToAction("Index", "Home");
