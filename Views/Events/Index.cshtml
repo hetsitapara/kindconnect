@@ -20,7 +20,7 @@
                 {
                     <h2>Events</h2>
                 }
-                @if (User.IsInRole("NGO") || User.IsInRole("Superuser"))
+                @if (User.IsInRole("NGO"))
                 {
                     <a asp-action="Create" class="btn btn-primary">Create New Event</a>
                 }
@@ -50,8 +50,69 @@
                 </div>
             }
 
+            @* Search and Filter Section *@
+            @if (!User.IsInRole("NGO"))
+            {
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="get" asp-action="@(User.IsInRole("Volunteer") ? "Browse" : "Index")">
+                            <div class="row g-3">
+                                <div class="col-md-5">
+                                    <label for="searchNGO" class="form-label">Search by NGO Name</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="searchNGO" 
+                                           name="searchNGO" 
+                                           placeholder="Enter NGO name..." 
+                                           value="@ViewBag.SearchNGO">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="category" class="form-label">Filter by Category</label>
+                                    <select class="form-select" id="category" name="category">
+                                        <option value="">All Categories</option>
+                                        @if (ViewBag.Categories != null)
+                                        {
+                                            foreach (var cat in ViewBag.Categories as List<string>)
+                                            {
+                                                <option value="@cat" selected="@(cat == ViewBag.SelectedCategory)">@cat</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary me-2">
+                                        <i class="fas fa-search"></i> Search
+                                    </button>
+                                    <a asp-action="@(User.IsInRole("Volunteer") ? "Browse" : "Index")" class="btn btn-outline-secondary">
+                                        <i class="fas fa-redo"></i> Reset
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+
             @if (Model.Any())
             {
+                @* Results Count *@
+                @if (!string.IsNullOrEmpty(ViewBag.SearchNGO as string) || !string.IsNullOrEmpty(ViewBag.SelectedCategory as string))
+                {
+                    <div class="mb-3">
+                        <p class="text-muted">
+                            <strong>@Model.Count()</strong> event(s) found
+                            @if (!string.IsNullOrEmpty(ViewBag.SearchNGO as string))
+                            {
+                                <span> matching NGO: <strong>@ViewBag.SearchNGO</strong></span>
+                            }
+                            @if (!string.IsNullOrEmpty(ViewBag.SelectedCategory as string))
+                            {
+                                <span> in category: <strong>@ViewBag.SelectedCategory</strong></span>
+                            }
+                        </p>
+                    </div>
+                }
+
                 <div class="row">
                     @foreach (var item in Model)
                     {
@@ -77,21 +138,33 @@
                                     <div class="d-flex justify-content-between">
                                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">View Details</a>
                                         <div>
-                                            @if (User.IsInRole("Volunteer") && item.IsUpcoming && !item.IsFull)
+                                            @if (User.IsInRole("Volunteer"))
                                             {
-                                                var userApplications = ViewBag.UserApplications as List<int> ?? new List<int>();
-                                                if (!userApplications.Contains(item.Id))
+                                                var userApplications = ViewBag.UserApplications as Dictionary<int, ApplicationStatus> ?? new Dictionary<int, ApplicationStatus>();
+                                                if (!userApplications.ContainsKey(item.Id))
                                                 {
-                                                    <a asp-controller="VolunteerApplications" asp-action="Apply" asp-route-eventId="@item.Id" class="btn btn-success btn-sm me-1">
-                                                        <i class="fas fa-hand-holding-heart"></i> Apply
-                                                    </a>
+                                                    @if (item.IsUpcoming && !item.IsFull)
+                                                    {
+                                                        <a asp-controller="VolunteerApplications" asp-action="Apply" asp-route-eventId="@item.Id" class="btn btn-success btn-sm me-1">
+                                                            <i class="fas fa-hand-holding-heart"></i> Apply
+                                                        </a>
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    <span class="badge bg-info text-dark">Applied</span>
+                                                    var status = userApplications[item.Id];
+                                                    var badgeClass = status switch
+                                                    {
+                                                        ApplicationStatus.Pending => "bg-warning text-dark",
+                                                        ApplicationStatus.Approved => "bg-success",
+                                                        ApplicationStatus.Rejected => "bg-danger",
+                                                        ApplicationStatus.Cancelled => "bg-secondary",
+                                                        _ => "bg-info text-dark"
+                                                    };
+                                                    <span class="badge @badgeClass">@status</span>
                                                 }
                                             }
-                                            @if (User.IsInRole("NGO") || User.IsInRole("Superuser"))
+                                            @if (User.IsInRole("NGO"))
                                             {
                                                 <a asp-controller="VolunteerApplications" asp-action="Manage" asp-route-eventId="@item.Id" class="btn btn-success btn-sm me-1">
                                                     <i class="fas fa-users"></i> Manage
@@ -125,10 +198,6 @@
                     {
                         <h4>No events found</h4>
                         <p class="text-muted">There are currently no events available.</p>
-                        @if (User.IsInRole("Superuser"))
-                        {
-                            <a asp-action="Create" class="btn btn-primary">Create the first event</a>
-                        }
                     }
                 </div>
             }

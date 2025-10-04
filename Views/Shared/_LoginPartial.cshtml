@@ -14,7 +14,6 @@
             @if (User.IsInRole("NGO"))
             {
                 <li><a class="dropdown-item" asp-area="" asp-controller="Events" asp-action="Create">Create Event</a></li>
-                <li><a class="dropdown-item" asp-area="" asp-controller="NGOProfiles" asp-action="Details" asp-route-id="@ViewBag.NGOProfileId">NGO Profile</a></li>
             }
             
             @* Removed Manage NGOs link *@

@@ -27,7 +27,7 @@
                     @if (stats != null)
                     {
                         <div class="row mb-4">
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="card bg-primary text-white">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Total</h5>
@@ -35,7 +35,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="card bg-warning text-dark">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Pending</h5>
@@ -43,7 +43,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="card bg-success text-white">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Approved</h5>
@@ -51,27 +51,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="card bg-danger text-white">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Rejected</h5>
                                         <h3>@stats.RejectedApplications</h3>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="card bg-secondary text-white">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">Cancelled</h5>
-                                        <h3>@stats.CancelledApplications</h3>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="card bg-info text-white">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">Events</h5>
-                                        <h3>@Model.Select(a => a.EventId).Distinct().Count()</h3>
                                     </div>
                                 </div>
                             </div>

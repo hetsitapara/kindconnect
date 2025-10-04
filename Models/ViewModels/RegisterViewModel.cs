@@ -31,9 +31,9 @@ namespace VolunteerManagementSystem.Models.ViewModels
         [Display(Name = "Last Name")]
         public string LastName { get; set; } = string.Empty;
 
-        [StringLength(20, ErrorMessage = "The {0} must be at max {1} characters long.")]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Phone number must be exactly 10 digits")]
         [Display(Name = "Phone Number")]
-        [Phone]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be exactly 10 digits")]
         public string? Phone { get; set; }
 
         // Role selection (Volunteer or NGO)
@@ -56,7 +56,8 @@ namespace VolunteerManagementSystem.Models.ViewModels
         public string? OrganizationContactEmail { get; set; }
 
         [Display(Name = "Organization Contact Phone")]
-        [StringLength(20, ErrorMessage = "The {0} must be at max {1} characters long.")]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Phone number must be exactly 10 digits")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be exactly 10 digits")]
         public string? OrganizationContactPhone { get; set; }
 
         [Display(Name = "Organization Address")]

@@ -24,13 +24,12 @@ namespace VolunteerManagementSystem.Controllers
             _userManager = userManager;
         }
 
-        // GET: Events - List events for browsing
-        public async Task<IActionResult> Index()
+        // GET: Events - List events for browsing with search and filter
+        public async Task<IActionResult> Index(string searchNGO, string category)
         {
             var query = _context.Events
                 .Include(e => e.NGO)
                 .Where(e => e.IsActive && e.IsPublic)
-                .OrderBy(e => e.StartAt)
                 .AsQueryable();
 
             // If Superuser, show everything including private/inactive
@@ -38,7 +37,6 @@ namespace VolunteerManagementSystem.Controllers
             {
                 query = _context.Events
                     .Include(e => e.NGO)
-                    .OrderBy(e => e.StartAt)
                     .AsQueryable();
             }
             // If NGO, show only their own events
@@ -53,7 +51,6 @@ namespace VolunteerManagementSystem.Controllers
                     query = _context.Events
                         .Include(e => e.NGO)
                         .Where(e => e.NGOId == ngoProfile.Id && e.IsActive)
-                        .OrderBy(e => e.StartAt)
                         .AsQueryable();
                 }
                 else
@@ -66,9 +63,36 @@ namespace VolunteerManagementSystem.Controllers
                 }
             }
 
+            // Apply search filter by NGO name
+            if (!string.IsNullOrEmpty(searchNGO))
+            {
+                query = query.Where(e => e.NGO.Name.Contains(searchNGO));
+            }
+
+            // Apply category filter
+            if (!string.IsNullOrEmpty(category))
+            {
+                query = query.Where(e => e.Category == category);
+            }
+
+            // Order by start date
+            query = query.OrderBy(e => e.StartAt);
+
             var events = await query.ToListAsync();
 
-            // Check if current user has applied for each event (only for volunteers)
+            // Get all unique categories for dropdown
+            var categories = await _context.Events
+                .Where(e => e.IsActive)
+                .Select(e => e.Category)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToListAsync();
+
+            ViewBag.Categories = categories;
+            ViewBag.SearchNGO = searchNGO;
+            ViewBag.SelectedCategory = category;
+
+            // Check if current user has applied for each event and get the application status (only for volunteers)
             if (User.Identity.IsAuthenticated && User.IsInRole("Volunteer"))
             {
                 var currentUser = await _userManager.GetUserAsync(User);
@@ -76,8 +100,7 @@ namespace VolunteerManagementSystem.Controllers
                 {
                     var userApplications = await _context.VolunteerApplications
                         .Where(va => va.UserId == currentUser.Id)
-                        .Select(va => va.EventId)
-                        .ToListAsync();
+                        .ToDictionaryAsync(va => va.EventId, va => va.Status);
 
                     ViewBag.UserApplications = userApplications;
                 }
@@ -86,24 +109,48 @@ namespace VolunteerManagementSystem.Controllers
             return View(events);
         }
 
-        // GET: Events/Browse - Browse all public events (for volunteers)
+        // GET: Events/Browse - Browse all public events (for volunteers) with search and filter
         [Authorize(Roles = "Volunteer")]
-        public async Task<IActionResult> Browse()
+        public async Task<IActionResult> Browse(string searchNGO, string category)
         {
-            var events = await _context.Events
+            var query = _context.Events
                 .Include(e => e.NGO)
                 .Where(e => e.IsActive && e.IsPublic)
-                .OrderBy(e => e.StartAt)
+                .AsQueryable();
+
+            // Apply search filter by NGO name
+            if (!string.IsNullOrEmpty(searchNGO))
+            {
+                query = query.Where(e => e.NGO.Name.Contains(searchNGO));
+            }
+
+            // Apply category filter
+            if (!string.IsNullOrEmpty(category))
+            {
+                query = query.Where(e => e.Category == category);
+            }
+
+            var events = await query.OrderBy(e => e.StartAt).ToListAsync();
+
+            // Get all unique categories for dropdown
+            var categories = await _context.Events
+                .Where(e => e.IsActive && e.IsPublic)
+                .Select(e => e.Category)
+                .Distinct()
+                .OrderBy(c => c)
                 .ToListAsync();
 
-            // Check if current user has applied for each event
+            ViewBag.Categories = categories;
+            ViewBag.SearchNGO = searchNGO;
+            ViewBag.SelectedCategory = category;
+
+            // Check if current user has applied for each event and get the application status
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser != null)
             {
                 var userApplications = await _context.VolunteerApplications
                     .Where(va => va.UserId == currentUser.Id)
-                    .Select(va => va.EventId)
-                    .ToListAsync();
+                    .ToDictionaryAsync(va => va.EventId, va => va.Status);
 
                 ViewBag.UserApplications = userApplications;
             }

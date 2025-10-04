@@ -1,0 +1,208 @@
+@model NGOProfile
+
+@{
+    ViewData["Title"] = "NGO Details";
+    var events = ViewBag.Events as List<Event>;
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>NGO Details</h2>
+            <p class="text-muted">Detailed information about @Model.Name</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- NGO Information -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Organization Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th width="40%">NGO Name:</th>
+                                <td>@Model.Name</td>
+                            </tr>
+                            <tr>
+                                <th>Mission:</th>
+                                <td>@Model.Mission</td>
+                            </tr>
+                            <tr>
+                                <th>Description:</th>
+                                <td>@(Model.Description ?? "N/A")</td>
+                            </tr>
+                            <tr>
+                                <th>Contact Email:</th>
+                                <td>@Model.ContactEmail</td>
+                            </tr>
+                            <tr>
+                                <th>Contact Phone:</th>
+                                <td>@(Model.ContactPhone ?? "N/A")</td>
+                            </tr>
+                            <tr>
+                                <th>Address:</th>
+                                <td>@(Model.Address ?? "N/A")</td>
+                            </tr>
+                            <tr>
+                                <th>Registered Date:</th>
+                                <td>@Model.CreatedAt.ToString("MMMM dd, yyyy")</td>
+                            </tr>
+                            <tr>
+                                <th>Status:</th>
+                                <td>
+                                    @if (Model.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Account Information -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Account Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th width="40%">Account Owner:</th>
+                                <td>@Model.User?.FullName</td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td>@Model.User?.Email</td>
+                            </tr>
+                            <tr>
+                                <th>Phone:</th>
+                                <td>@(Model.User?.Phone ?? "N/A")</td>
+                            </tr>
+                            <tr>
+                                <th>Username:</th>
+                                <td>@Model.User?.UserName</td>
+                            </tr>
+                            <tr>
+                                <th>Last Login:</th>
+                                <td>@(Model.User?.LastLoginAt?.ToString("MMMM dd, yyyy HH:mm") ?? "Never")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Event Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <h3 class="text-primary">@events?.Count</h3>
+                            <p class="text-muted mb-0">Total Events</p>
+                        </div>
+                        <div class="col-4">
+                            <h3 class="text-success">@events?.Count(e => e.IsActive)</h3>
+                            <p class="text-muted mb-0">Active</p>
+                        </div>
+                        <div class="col-4">
+                            <h3 class="text-warning">@events?.Count(e => e.StartAt > DateTime.UtcNow)</h3>
+                            <p class="text-muted mb-0">Upcoming</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Events List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Events Created</h5>
+                </div>
+                <div class="card-body">
+                    @if (events?.Any() == true)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Start Date</th>
+                                        <th>Venue</th>
+                                        <th>Capacity</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var eventItem in events)
+                                    {
+                                        <tr>
+                                            <td>@eventItem.Title</td>
+                                            <td>@eventItem.Category</td>
+                                            <td>@eventItem.StartAt.ToString("MMM dd, yyyy")</td>
+                                            <td>@eventItem.Venue</td>
+                                            <td>@eventItem.Capacity</td>
+                                            <td>
+                                                @if (eventItem.IsActive)
+                                                {
+                                                    <span class="badge bg-success">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Inactive</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("Details", "Events", new { id = eventItem.Id })" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No events found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <a href="@Url.Action("NGOs")" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to NGOs
+            </a>
+            <form asp-action="DeleteNGO" asp-route-id="@Model.Id" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Delete NGO
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

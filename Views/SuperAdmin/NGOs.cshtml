@@ -1,0 +1,113 @@
+@model List<NGOProfile>
+
+@{
+    ViewData["Title"] = "Manage NGOs";
+    var ngoStats = ViewBag.NGOStats as Dictionary<int, int>;
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Manage NGOs</h2>
+            <p class="text-muted">View and manage all NGO accounts</p>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">All NGOs (@Model.Count)</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>NGO Name</th>
+                                        <th>Contact Email</th>
+                                        <th>Contact Phone</th>
+                                        <th>Events</th>
+                                        <th>Registered Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ngo in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@ngo.Name</strong>
+                                                <br />
+                                                <small class="text-muted">@ngo.User?.FullName</small>
+                                            </td>
+                                            <td>@ngo.ContactEmail</td>
+                                            <td>@(ngo.ContactPhone ?? "N/A")</td>
+                                            <td>
+                                                <span class="badge bg-info">@(ngoStats?.ContainsKey(ngo.Id) == true ? ngoStats[ngo.Id] : 0)</span>
+                                            </td>
+                                            <td>@ngo.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                @if (ngo.IsActive)
+                                                {
+                                                    <span class="badge bg-success">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Inactive</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("NGODetails", new { id = ngo.Id })" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye"></i> View
+                                                </a>
+                                                <form asp-action="DeleteNGO" asp-route-id="@ngo.Id" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No NGOs found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <a href="@Url.Action("Superuser", "Dashboard")" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>

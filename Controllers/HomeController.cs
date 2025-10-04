@@ -22,19 +22,17 @@ public class HomeController : Controller
         _context = context;
     }
 
-    // Landing page: aggregates public counts to display on home
-    public async Task<IActionResult> Index()
+    // Landing page: redirect to appropriate dashboard based on user role
+    public IActionResult Index()
     {
-        var stats = new
+        if (User.Identity?.IsAuthenticated == true)
         {
-            TotalEvents = await _context.Events.CountAsync(e => e.IsPublic && e.IsActive),
-            TotalNGOs = await _context.NGOProfiles.CountAsync(n => n.IsActive),
-            TotalVolunteers = await _context.Users.CountAsync(u => u.IsActive)
-        };
+            // Redirect to Dashboard which will handle role-based routing
+            return RedirectToAction("Index", "Dashboard");
+        }
 
-        ViewBag.Stats = stats;
-
-        return View();
+        // If not authenticated, redirect to login
+        return RedirectToAction("Login", "Account");
     }
 
     // Static page

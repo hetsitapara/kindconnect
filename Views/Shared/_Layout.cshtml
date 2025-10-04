@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
 @inject SignInManager<VolunteerManagementSystem.Models.ApplicationUser> SignInManager
 
 <!DOCTYPE html>
@@ -67,7 +67,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    Volunteer Management
+                    KindConnect
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -100,10 +100,19 @@
                                     <a class="nav-link" asp-area="" asp-controller="VolunteerApplications" asp-action="Index">My Applications</a>
                                 </li>
                             }
-                            @if (User.IsInRole("NGO") || User.IsInRole("Superuser"))
+                            @if (User.IsInRole("NGO"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-area="" asp-controller="VolunteerApplications" asp-action="ManageAll">Manage Applications</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Superuser"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="SuperAdmin" asp-action="Volunteers">Manage Volunteers</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="SuperAdmin" asp-action="NGOs">Manage NGOs</a>
                                 </li>
                             }
                         }

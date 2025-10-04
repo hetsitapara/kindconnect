@@ -44,7 +44,8 @@ namespace VolunteerManagementSystem.Models
         [StringLength(100)]
         public string? ContactPerson { get; set; }
 
-        [StringLength(20)]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Phone number must be exactly 10 digits")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be exactly 10 digits")]
         public string? ContactPhone { get; set; }
 
         [EmailAddress]

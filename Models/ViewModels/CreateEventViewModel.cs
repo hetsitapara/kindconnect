@@ -48,8 +48,9 @@ namespace VolunteerManagementSystem.Models.ViewModels
         [Display(Name = "Contact Person")]
         public string? ContactPerson { get; set; }
 
-        [StringLength(20)]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Phone number must be exactly 10 digits")]
         [Display(Name = "Contact Phone")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be exactly 10 digits")]
         public string? ContactPhone { get; set; }
 
         [EmailAddress]

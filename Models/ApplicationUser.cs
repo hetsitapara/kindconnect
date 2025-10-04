@@ -14,7 +14,8 @@ namespace VolunteerManagementSystem.Models
         [StringLength(100)]
         public string LastName { get; set; } = string.Empty;
 
-        [StringLength(20)]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Phone number must be exactly 10 digits")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be exactly 10 digits")]
         public string? Phone { get; set; }
 
         // Account creation timestamp (UTC)
