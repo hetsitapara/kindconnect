@@ -13,7 +13,7 @@ This is a role-based ASP.NET Core MVC application to connect NGOs with volunteer
 See `PROJECT_WORKFLOW.md` for a complete explanation of the app flow, roles, and demo steps.
 
 
------------------------------------------------------------------(work distribution)-------------------------------------------------------------------------------------------
+## Project Distribution
 
 ## Het_Sitapara(CE_147): Authentication & User Management Module**
 
